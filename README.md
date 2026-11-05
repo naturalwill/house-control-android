@@ -233,6 +233,37 @@ emulator -avd house &
 An emulator cannot see the Mac's Bonjour advertisement. Point a debug build at the Mac directly instead:
 `adb shell am start -n dev.housecontrol.android.debug/dev.housecontrol.android.MainActivity --es syncEndpoint 10.0.2.2:<port>`.
 
+### Build it in GitHub Actions
+
+The **Build** workflow runs the unit tests and builds a debug APK on every push and pull request.
+The **Release** workflow builds the signed release: it runs when you push a tag (`v1.2.0`), or on
+demand from the Actions tab.
+
+It signs the APK with a keystore of your own, kept in the repository's secrets — the key the
+project's own releases are signed with is not in the repository, and never will be. Add these four
+secrets under **Settings → Secrets and variables → Actions**:
+
+| Secret | What it is |
+| --- | --- |
+| `RELEASE_KEYSTORE_BASE64` | Your keystore, as base64 (`base64 -w 0 release.jks`) |
+| `RELEASE_KEYSTORE_PASSWORD` | The keystore's password |
+| `RELEASE_KEY_ALIAS` | The key's alias |
+| `RELEASE_KEY_PASSWORD` | The key's password |
+
+A keystore of your own:
+
+```bash
+keytool -genkeypair -v -keystore release.jks -keyalias house-control \
+  -keyalg RSA -keysize 4096 -validity 10000 \
+  -dname "CN=Your Name, O=Your Project, C=CN"
+base64 -w 0 release.jks > release.jks.base64
+```
+
+The workflow publishes the APK, its SHA-256 and the certificate it was signed with. A build made
+this way carries your own signature, and it keeps the same application id as the project's own
+release: Android only replaces an app signed with the same key, so it installs beside that release
+rather than over it.
+
 ## Development
 
 ```
