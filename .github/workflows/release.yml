@@ -10,6 +10,10 @@ on:
         description: 'Version to build, e.g. 1.2.0 (defaults to the tag)'
         required: false
         type: string
+      release_tag:
+        description: 'Publish the APK under this tag (optional; without it the APK stays in the run artifacts)'
+        required: false
+        type: string
   push:
     tags: ['v*']
 
@@ -56,9 +60,16 @@ jobs:
         id: version
         env:
           REQUESTED: ${{ inputs.version }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
         run: |
           name="$REQUESTED"
+          if [ -z "$name" ]; then name="${RELEASE_TAG#v}"; fi
           if [ -z "$name" ]; then name="${GITHUB_REF_NAME#v}"; fi
+          # A branch name would make versionCode 0, which Android refuses.
+          if ! printf '%s' "$name" | grep -Eq '^[0-9]+([.][0-9]+)*$'; then
+            echo "::error::No version to build ('$name'). Fill in the version input, or push a tag like v1.2.0."
+            exit 1
+          fi
           # 1.2.3 becomes 10203, so that a later version always sorts above an earlier one.
           code=$(printf '%s' "$name" | awk -F. '{ if (NF >= 3) printf "%d%02d%02d", $1, $2, $3; else if (NF == 2) printf "%d%02d", $1, $2; else printf "%d", $1 }')
           echo "name=$name" >> "$GITHUB_OUTPUT"
@@ -130,11 +141,16 @@ jobs:
             app/build/outputs/apk/release/SIGNING.txt
 
       - name: Publish the release
-        if: startsWith(github.ref, 'refs/tags/')
+        if: startsWith(github.ref, 'refs/tags/') || inputs.release_tag != ''
         env:
           GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
         run: |
-          gh release create "$GITHUB_REF_NAME" \
+          tag="$RELEASE_TAG"
+          if [ -z "$tag" ]; then tag="$GITHUB_REF_NAME"; fi
+          # --target lets the release carry a tag that does not exist yet.
+          gh release create "$tag" \
             "app/build/outputs/apk/release/${{ steps.apk.outputs.file }}" \
             app/build/outputs/apk/release/SHA256SUMS \
+            --target "$GITHUB_SHA" \
             --generate-notes
