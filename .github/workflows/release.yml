@@ -76,6 +76,16 @@ jobs:
           mkdir -p .signing
           printf '%s' "$KEYSTORE" | base64 --decode > .signing/release.jks
 
+      - name: Check the signing key
+        env:
+          HOUSE_SIGNING_STORE_PASSWORD: ${{ secrets.RELEASE_KEYSTORE_PASSWORD }}
+          HOUSE_SIGNING_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
+        run: |
+          # Says what is wrong with the key, instead of leaving it to the build.
+          keytool -list -keystore .signing/release.jks \
+            -alias "$HOUSE_SIGNING_KEY_ALIAS" \
+            -storepass "$HOUSE_SIGNING_STORE_PASSWORD"
+
       - name: Build the release APK
         env:
           HOUSE_SIGNING_STORE_FILE: .signing/release.jks
