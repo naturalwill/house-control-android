@@ -492,8 +492,8 @@ export async function bootEditor(root) {
 
   function rowLabel(kind, item) {
     if (kind === 'room') return [item.name || item.id, `${fix(item.rect[2])} × ${fix(item.rect[3])} m`];
-    if (kind === 'light') return [item.name || item.id, `${roomName(item.room)} · ${item.type}`];
-    if (kind === 'ac') return [item.name || item.id, `${roomName(item.room)} · ${item.wall} wall`];
+    if (kind === 'light') return [item.name || item.id, tf('{0} · {1}', roomName(item.room), tr(item.type))];
+    if (kind === 'ac') return [item.name || item.id, tf('{0} · {1} wall', roomName(item.room), tr(item.wall))];
     if (kind === 'furniture') return [item.type, roomName(roomAt(item.pos)?.id) || '—'];
     if (kind === 'opening' && !item.to) return [item.type || 'door', ''];
     if (kind === 'opening') return [item.type || 'door', `${fix(Math.hypot(item.to[0] - item.from[0], item.to[1] - item.from[1]))} m`];
