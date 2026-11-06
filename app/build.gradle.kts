@@ -55,8 +55,10 @@ android {
         applicationId = "dev.housecontrol.android"
         minSdk = 26
         targetSdk = 36
-        versionCode = 3
-        versionName = "1.2.0"
+        // A build may set both, so that a release does not have to edit this file:
+        // ./gradlew assembleRelease -PversionCode=10203 -PversionName=1.2.3
+        versionCode = project.findProperty("versionCode")?.toString()?.toIntOrNull() ?: 3
+        versionName = project.findProperty("versionName")?.toString() ?: "1.2.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
