@@ -78,6 +78,10 @@ it is written.
 - **English** (default) — `app/src/main/res/values/strings.xml`, and the English words in the web UI.
 - **Simplified Chinese** — `app/src/main/res/values-zh-rCN/strings.xml` and `web/src/locales/zh-CN.js`.
 
+The furniture, the floor finishes, the lamps and the walls are named in the chosen language too.
+Only the word on screen changes: the plan keeps the identifiers it was written with, so a plan
+made on one phone still opens on another.
+
 On Android 13 and later the app's language is also listed in **Settings → Apps → House Control →
 Language**; on earlier versions it follows the system language.
 

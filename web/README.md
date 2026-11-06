@@ -9,6 +9,9 @@ what Android needs on top:
 - `src/i18n.js` and `src/locales/` are the translation layer of the Android build: `t()` looks a label up in the
   dictionary of the app's language and falls back to the English word, so upstream keeps writing its labels as plain
   English. The app tells the page which language it runs in through `window.__HOUSE_BOOT__.locale`.
+  The dictionary holds the identifiers the editor stores in the floor plan as well — `sofa`, `oak`, `north` and the
+  rest. Only the word on screen is translated: the identifier in the plan stays as it is, so a plan written on one
+  phone still opens on another.
 - `src/main.js` and `src/editor/editor.js` answer Android's back button (`window.house.back()`).
 - `src/style.css` adds the side safe areas, the tablet layout and the layout on its side.
 - `vite.config.js` targets Chrome 100 as well as Safari 17.

@@ -73,6 +73,9 @@ House Control 支持英文和简体中文。
 - **英文**（默认）—— `app/src/main/res/values/strings.xml`，以及 web UI 里的英文原文。
 - **简体中文** —— `app/src/main/res/values-zh-rCN/strings.xml` 和 `web/src/locales/zh-CN.js`。
 
+家具、地面材质、灯具和墙面也用所选语言命名。只是屏幕上的字变了：户型图里存的仍是原来的标识符，
+所以在一部手机上做的户型图换到另一部照样打得开。
+
 在 Android 13 及更高版本上，应用的语言也列在 **Settings → Apps → House Control → Language** 里；
 更早的版本则跟随系统语言。
 
